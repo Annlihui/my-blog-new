@@ -21,6 +21,31 @@ function initializeBlog() {
     initSearch();
 }
 
+// ========== 文章数据 ========== //
+const postsData = [
+  {
+    title: '构建现代Web应用的最佳实践',
+    date: '2024年1月15日',
+    category: '技术',
+    excerpt: '探讨现代Web开发中的关键技术和最佳实践，包括性能优化、用户体验设计等方面...',
+    content: `<p>这里是《构建现代Web应用的最佳实践》的完整内容。你可以在这里详细介绍你的技术观点、代码示例等。</p>`
+  },
+  {
+    title: '关于学习与成长的思考',
+    date: '2024年1月10日',
+    category: '思考',
+    excerpt: '分享我在学习和个人成长过程中的一些感悟和经验，希望能对大家有所帮助...',
+    content: `<p>这里是《关于学习与成长的思考》的完整内容。可以写你的成长故事、学习方法等。</p>`
+  },
+  {
+    title: '极简主义的生活方式',
+    date: '2024年1月5日',
+    category: '生活',
+    excerpt: '如何通过极简主义来改善生活质量，减少不必要的物质和精神负担...',
+    content: `<p>这里是《极简主义的生活方式》的完整内容。可以写你的生活理念、实践经验等。</p>`
+  }
+];
+
 // ========== 路由相关 ========== //
 window.addEventListener('hashchange', handleRoute);
 
@@ -41,23 +66,52 @@ function handleRoute() {
 }
 
 function renderHomePage() {
-    document.querySelector('.main').innerHTML = window._mainHomeHTML;
+    // 渲染文章列表
+    let postsHTML = postsData.map(post => `
+      <article class="post-card">
+        <div class="post-meta">
+          <span class="post-date">${post.date}</span>
+          <span class="post-category">${post.category}</span>
+        </div>
+        <h3 class="post-title">${post.title}</h3>
+        <p class="post-excerpt">${post.excerpt}</p>
+        <a class="post-link">阅读更多 →</a>
+      </article>
+    `).join('');
+    document.querySelector('.main').innerHTML = `
+      <section class="hero">
+        <h1 class="hero-title">欢迎来到我的博客</h1>
+        <p class="hero-subtitle">分享技术、生活和思考</p>
+      </section>
+      <section class="posts">
+        <h2 class="section-title">最新文章</h2>
+        <div class="posts-grid">${postsHTML}</div>
+      </section>
+      <section class="about">
+        <h2 class="section-title">关于我</h2>
+        <div class="about-content">
+          <p>我是一名热爱技术和写作的开发者，喜欢分享知识和经验。</p>
+          <p>在这里，我会记录我的学习历程、技术心得和生活感悟。</p>
+        </div>
+      </section>
+    `;
     initPostCards();
     initSearch && initSearch();
 }
 
 function renderPostDetail(title) {
-    // 查找对应文章卡片
-    const cards = document.querySelectorAll('.post-card');
-    let found = null;
-    cards.forEach(card => {
-        if (card.querySelector('.post-title').textContent === title) {
-            found = card.cloneNode(true);
-        }
-    });
+    const post = postsData.find(p => p.title === title);
     const main = document.querySelector('.main');
-    if (found) {
-        main.innerHTML = `<section class='post-detail'>${found.innerHTML}<button class='back-btn'>返回</button></section>`;
+    if (post) {
+        main.innerHTML = `<section class='post-detail'>
+          <div class="post-meta">
+            <span class="post-date">${post.date}</span>
+            <span class="post-category">${post.category}</span>
+          </div>
+          <h2 class="post-title">${post.title}</h2>
+          <div class="post-content">${post.content}</div>
+          <button class='back-btn'>返回</button>
+        </section>`;
         main.querySelector('.back-btn').onclick = () => { location.hash = ''; };
     } else {
         main.innerHTML = '<section class="not-found"><h2>未找到该文章</h2></section>';
