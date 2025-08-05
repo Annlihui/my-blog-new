@@ -1,6 +1,8 @@
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', function() {
-    initializeBlog();
+    initThemeToggle();
+    initSmoothScroll();
+    initSearch();
 });
 
 // 博客初始化函数
