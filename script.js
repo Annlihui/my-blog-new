@@ -47,157 +47,8 @@ const postsData = [
 ];
 
 // ========== 路由相关 ========== //
-window.addEventListener('hashchange', handleRoute);
-
-function handleRoute() {
-    const hash = location.hash.replace(/^#\/?/, '');
-    if (!hash || hash === '' || hash === 'home') {
-        renderHomePage();
-    } else if (hash.startsWith('post/')) {
-        const postTitle = decodeURIComponent(hash.replace('post/', ''));
-        renderPostDetail(postTitle);
-    } else if (hash === 'about') {
-        renderAboutPage();
-    } else if (hash === 'contact') {
-        renderContactPage();
-    } else {
-        renderNotFound();
-    }
-}
-
-function renderHomePage() {
-    // 渲染文章列表
-    let postsHTML = postsData.map(post => `
-      <article class="post-card">
-        <div class="post-meta">
-          <span class="post-date">${post.date}</span>
-          <span class="post-category">${post.category}</span>
-        </div>
-        <h3 class="post-title">${post.title}</h3>
-        <p class="post-excerpt">${post.excerpt}</p>
-        <a class="post-link">阅读更多 →</a>
-      </article>
-    `).join('');
-    document.querySelector('.main').innerHTML = `
-      <section class="hero">
-        <h1 class="hero-title">欢迎来到我的博客</h1>
-        <p class="hero-subtitle">分享技术、生活和思考</p>
-      </section>
-      <section class="posts">
-        <h2 class="section-title">最新文章</h2>
-        <div class="posts-grid">${postsHTML}</div>
-      </section>
-      <section class="about">
-        <h2 class="section-title">关于我</h2>
-        <div class="about-content">
-          <p>我是一名热爱技术和写作的开发者，喜欢分享知识和经验。</p>
-          <p>在这里，我会记录我的学习历程、技术心得和生活感悟。</p>
-        </div>
-      </section>
-    `;
-    initPostCards();
-    initSearch && initSearch();
-}
-
-function renderPostDetail(title) {
-    const post = postsData.find(p => p.title === title);
-    const main = document.querySelector('.main');
-    if (post) {
-        main.innerHTML = `<section class='post-detail'>
-          <div class="post-meta">
-            <span class="post-date">${post.date}</span>
-            <span class="post-category">${post.category}</span>
-          </div>
-          <h2 class="post-title">${post.title}</h2>
-          <div class="post-content">${post.content}</div>
-          <button class='back-btn'>返回</button>
-        </section>`;
-        main.querySelector('.back-btn').onclick = () => { location.hash = ''; };
-    } else {
-        main.innerHTML = '<section class="not-found"><h2>未找到该文章</h2></section>';
-    }
-}
-
-function renderAboutPage() {
-    document.querySelector('.main').innerHTML = `<section class='about'><h2>关于我</h2><div class='about-content'><p>我是热爱技术和写作的开发者，喜欢分享知识和经验。</p><p>这里会记录我的学习历程、技术心得和生活感悟。</p></div></section>`;
-}
-
-function renderContactPage() {
-    document.querySelector('.main').innerHTML = `<section class='contact'><h2>联系我</h2><div class='contact-content'><p>邮箱：your@email.com</p><p>欢迎交流！</p></div></section>`;
-}
-
-function renderNotFound() {
-    document.querySelector('.main').innerHTML = '<section class="not-found"><h2>页面未找到</h2></section>';
-}
-
-// 保存主页初始 HTML 以便切换回来
-window.addEventListener('DOMContentLoaded', function() {
-    window._mainHomeHTML = document.querySelector('.main').innerHTML;
-    handleRoute();
-});
-
-// 优化导航栏点击事件，切换 hash
-function initNavigation() {
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            navLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-            const page = this.textContent.trim();
-            if (page === '首页') {
-                location.hash = '';
-            } else if (page === '文章') {
-                location.hash = '';
-            } else if (page === '关于') {
-                location.hash = 'about';
-            } else if (page === '联系') {
-                location.hash = 'contact';
-            }
-        });
-    });
-}
-
-// 优化文章卡片点击事件，跳转到详情页
-function initPostCards() {
-    const postCards = document.querySelectorAll('.post-card');
-    postCards.forEach(card => {
-        card.addEventListener('click', function(e) {
-            if (e.target.tagName === 'A') return;
-            const title = this.querySelector('.post-title').textContent;
-            location.hash = 'post/' + encodeURIComponent(title);
-        });
-        card.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                this.click();
-            }
-        });
-        card.setAttribute('tabindex', '0');
-    });
-}
-
-// 平滑滚动
-function initSmoothScroll() {
-    // 为所有内部链接添加平滑滚动
-    const internalLinks = document.querySelectorAll('a[href^="#"]');
-    
-    internalLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const targetId = this.getAttribute('href').substring(1);
-            const targetElement = document.getElementById(targetId);
-            
-            if (targetElement) {
-                targetElement.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
-}
+// 移除 SPA 路由和 hash 切换相关代码
+// 只保留主题切换、搜索、平滑滚动等功能
 
 // 主题切换功能（可选）
 function initThemeToggle() {
@@ -350,6 +201,69 @@ function initSearch() {
         if (e.key === 'Enter') {
             performSearch();
         }
+    });
+}
+
+// 平滑滚动
+function initSmoothScroll() {
+    // 为所有内部链接添加平滑滚动
+    const internalLinks = document.querySelectorAll('a[href^="#"]');
+    
+    internalLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+}
+
+// 优化导航栏点击事件，切换 hash
+function initNavigation() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            navLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            const page = this.textContent.trim();
+            if (page === '首页') {
+                location.hash = '';
+            } else if (page === '文章') {
+                location.hash = '';
+            } else if (page === '关于') {
+                location.hash = 'about';
+            } else if (page === '联系') {
+                location.hash = 'contact';
+            }
+        });
+    });
+}
+
+// 优化文章卡片点击事件，跳转到详情页
+function initPostCards() {
+    const postCards = document.querySelectorAll('.post-card');
+    postCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') return;
+            const title = this.querySelector('.post-title').textContent;
+            location.hash = 'post/' + encodeURIComponent(title);
+        });
+        card.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
+        });
+        card.setAttribute('tabindex', '0');
     });
 }
 
