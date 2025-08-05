@@ -21,56 +21,104 @@ function initializeBlog() {
     initSearch();
 }
 
-// 导航栏交互
+// ========== 路由相关 ========== //
+window.addEventListener('hashchange', handleRoute);
+
+function handleRoute() {
+    const hash = location.hash.replace(/^#\/?/, '');
+    if (!hash || hash === '' || hash === 'home') {
+        renderHomePage();
+    } else if (hash.startsWith('post/')) {
+        const postTitle = decodeURIComponent(hash.replace('post/', ''));
+        renderPostDetail(postTitle);
+    } else if (hash === 'about') {
+        renderAboutPage();
+    } else if (hash === 'contact') {
+        renderContactPage();
+    } else {
+        renderNotFound();
+    }
+}
+
+function renderHomePage() {
+    document.querySelector('.main').innerHTML = window._mainHomeHTML;
+    initPostCards();
+    initSearch && initSearch();
+}
+
+function renderPostDetail(title) {
+    // 查找对应文章卡片
+    const cards = document.querySelectorAll('.post-card');
+    let found = null;
+    cards.forEach(card => {
+        if (card.querySelector('.post-title').textContent === title) {
+            found = card.cloneNode(true);
+        }
+    });
+    const main = document.querySelector('.main');
+    if (found) {
+        main.innerHTML = `<section class='post-detail'>${found.innerHTML}<button class='back-btn'>返回</button></section>`;
+        main.querySelector('.back-btn').onclick = () => { location.hash = ''; };
+    } else {
+        main.innerHTML = '<section class="not-found"><h2>未找到该文章</h2></section>';
+    }
+}
+
+function renderAboutPage() {
+    document.querySelector('.main').innerHTML = `<section class='about'><h2>关于我</h2><div class='about-content'><p>我是热爱技术和写作的开发者，喜欢分享知识和经验。</p><p>这里会记录我的学习历程、技术心得和生活感悟。</p></div></section>`;
+}
+
+function renderContactPage() {
+    document.querySelector('.main').innerHTML = `<section class='contact'><h2>联系我</h2><div class='contact-content'><p>邮箱：your@email.com</p><p>欢迎交流！</p></div></section>`;
+}
+
+function renderNotFound() {
+    document.querySelector('.main').innerHTML = '<section class="not-found"><h2>页面未找到</h2></section>';
+}
+
+// 保存主页初始 HTML 以便切换回来
+window.addEventListener('DOMContentLoaded', function() {
+    window._mainHomeHTML = document.querySelector('.main').innerHTML;
+    handleRoute();
+});
+
+// 优化导航栏点击事件，切换 hash
 function initNavigation() {
     const navLinks = document.querySelectorAll('.nav-link');
-    
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
-            
-            // 移除所有活动状态
             navLinks.forEach(l => l.classList.remove('active'));
-            
-            // 添加当前活动状态
             this.classList.add('active');
-            
-            // 这里可以添加页面切换逻辑
             const page = this.textContent.trim();
-            console.log(`导航到: ${page}`);
+            if (page === '首页') {
+                location.hash = '';
+            } else if (page === '文章') {
+                location.hash = '';
+            } else if (page === '关于') {
+                location.hash = 'about';
+            } else if (page === '联系') {
+                location.hash = 'contact';
+            }
         });
     });
 }
 
-// 文章卡片交互
+// 优化文章卡片点击事件，跳转到详情页
 function initPostCards() {
     const postCards = document.querySelectorAll('.post-card');
-    
     postCards.forEach(card => {
-        // 添加点击事件
         card.addEventListener('click', function(e) {
-            // 如果点击的是链接，不阻止默认行为
-            if (e.target.tagName === 'A') {
-                return;
-            }
-            
-            // 获取文章标题
+            if (e.target.tagName === 'A') return;
             const title = this.querySelector('.post-title').textContent;
-            console.log(`查看文章: ${title}`);
-            
-            // 这里可以添加跳转到文章详情页的逻辑
-            // window.location.href = `/post/${title}`;
+            location.hash = 'post/' + encodeURIComponent(title);
         });
-        
-        // 添加键盘导航支持
         card.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 this.click();
             }
         });
-        
-        // 设置卡片可聚焦
         card.setAttribute('tabindex', '0');
     });
 }
