@@ -217,8 +217,9 @@ function initSearch() {
     styleSheet.textContent = searchStyles;
     document.head.appendChild(styleSheet);
     
-    // 插入到文章区域前面
+    // 只在有 .posts 区块的页面插入搜索框
     const postsSection = document.querySelector('.posts');
+    if (!postsSection) return;
     postsSection.parentNode.insertBefore(searchContainer, postsSection);
     
     // 搜索功能
