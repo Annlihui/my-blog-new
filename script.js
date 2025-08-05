@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initThemeToggle();
     initSmoothScroll();
     initSearch();
+    renderHomeBlogRecommend();
 });
 
 // 博客初始化函数
@@ -30,23 +31,69 @@ const postsData = [
     date: '2024年1月15日',
     category: '技术',
     excerpt: '探讨现代Web开发中的关键技术和最佳实践，包括性能优化、用户体验设计等方面...',
-    content: `<p>这里是《构建现代Web应用的最佳实践》的完整内容。你可以在这里详细介绍你的技术观点、代码示例等。</p>`
+    content: `<p>这里是《构建现代Web应用的最佳实践》的完整内容。你可以在这里详细介绍你的技术观点、代码示例等。</p>`,
+    views: 120
   },
   {
     title: '关于学习与成长的思考',
     date: '2024年1月10日',
     category: '思考',
     excerpt: '分享我在学习和个人成长过程中的一些感悟和经验，希望能对大家有所帮助...',
-    content: `<p>这里是《关于学习与成长的思考》的完整内容。可以写你的成长故事、学习方法等。</p>`
+    content: `<p>这里是《关于学习与成长的思考》的完整内容。可以写你的成长故事、学习方法等。</p>`,
+    views: 88
   },
   {
     title: '极简主义的生活方式',
     date: '2024年1月5日',
     category: '生活',
     excerpt: '如何通过极简主义来改善生活质量，减少不必要的物质和精神负担...',
-    content: `<p>这里是《极简主义的生活方式》的完整内容。可以写你的生活理念、实践经验等。</p>`
+    content: `<p>这里是《极简主义的生活方式》的完整内容。可以写你的生活理念、实践经验等。</p>`,
+    views: 156
   }
 ];
+
+// 首页推荐模块渲染
+function renderHomeBlogRecommend() {
+  // 只在首页渲染
+  if (!document.getElementById('latest-blog') || !document.getElementById('hot-blog')) return;
+  // 最新 blog
+  const latest = postsData.slice().sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+  // 推荐 blog
+  const hot = postsData.slice().sort((a, b) => b.views - a.views)[0];
+
+  document.getElementById('latest-blog').innerHTML = `
+    <h2 class="section-title">最新 Blog</h2>
+    <article class="post-card">
+      <div class="post-meta">
+        <span class="post-date">${latest.date}</span>
+        <span class="post-category">${latest.category}</span>
+      </div>
+      <h3 class="post-title">${latest.title}</h3>
+      <p class="post-excerpt">${latest.excerpt}</p>
+      <a href="${getPostUrl(latest.title)}" class="post-link">阅读更多 →</a>
+    </article>
+  `;
+  document.getElementById('hot-blog').innerHTML = `
+    <h2 class="section-title">推荐 Blog</h2>
+    <article class="post-card">
+      <div class="post-meta">
+        <span class="post-date">${hot.date}</span>
+        <span class="post-category">${hot.category}</span>
+        <span style="margin-left:auto;color:#f90;font-size:0.9em;">🔥 ${hot.views} 次浏览</span>
+      </div>
+      <h3 class="post-title">${hot.title}</h3>
+      <p class="post-excerpt">${hot.excerpt}</p>
+      <a href="${getPostUrl(hot.title)}" class="post-link">阅读更多 →</a>
+    </article>
+  `;
+}
+
+function getPostUrl(title) {
+  if (title.includes('现代Web')) return 'post-xiandaiwebshijian.html';
+  if (title.includes('成长')) return 'post-xuexichengzhang.html';
+  if (title.includes('极简')) return 'post-jijian.html';
+  return '#';
+}
 
 // ========== 路由相关 ========== //
 // 移除 SPA 路由和 hash 切换相关代码
